@@ -2,5 +2,6 @@
   "title": "Emulsion",
   "type": "website",
   "card": "custom",
-  "description": "Script to screen."
+  "description": "Script to screen.",
+  "banner": "/x-banner.jpg"
 }
