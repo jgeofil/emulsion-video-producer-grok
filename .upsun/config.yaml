@@ -8,6 +8,7 @@ applications:
     hooks:
       build: |
         set -ex
+        npm i nitro vite
         npm ci --omit=dev
         npm run build
         # Export environment variables for site URL and database connection
