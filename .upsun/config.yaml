@@ -1,0 +1,45 @@
+# Upsun configuration, generated using AI at: 2026-11-23T03:24:10.319Z
+# AI can make mistakes. Please modify this file to suit your needs.
+applications:
+  app-builder-workspace:
+    type: nodejs:26
+    build:
+      flavor: none
+    hooks:
+      build: |
+        set -ex
+        npm ci --omit=dev
+        npm run build
+        # Export environment variables for site URL and database connection
+        echo >> .environment 'export SITE_URL="$(echo $PLATFORM_ROUTES | base64 -d | jq -r \"to_entries[] | select(.value.primary == true) | .key\")"'
+    web:
+      commands:
+        start: npm run serve -- --port=$PORT
+      locations:
+        /:
+          root: public
+          passthru: true
+          index: [index.html]
+    relationships:
+      database: {}
+
+  space:
+    source:
+      root: space
+    type: python:3.14
+    hooks:
+      build: |
+        set -ex
+        pip install -r requirements.txt
+    web:
+      commands:
+        start: python app.py
+
+services:
+  database:
+    type: postgresql:18
+
+routes:
+  https://{default}/:
+    type: upstream
+    upstream: app-builder-workspace:http
